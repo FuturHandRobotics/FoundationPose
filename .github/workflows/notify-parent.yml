@@ -19,7 +19,7 @@ jobs:
         env:
           GH_PARENT_REPO: FuturHandRobotics/FuturHub  # <- Edit here
           GH_TOKEN: ${{ secrets.FUTURHAND_SUBMODULE_UPDATE }}
-          SUBMODULE_PATH_IN_PARENT: external/foundationpose_grpc  # <- Edit here
+          SUBMODULE_PATH_IN_PARENT: external/foundationpose  # <- Edit here
           SHA: # Empty defaults to latest
           REPO: ${{ steps.prep.outputs.repo }}
         run: |
