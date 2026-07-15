@@ -1,0 +1,3 @@
+FROM shingarey/foundationpose_custom_cuda121:latest
+
+RUN pip install grpcio grpcio-tools --break-system-packages
