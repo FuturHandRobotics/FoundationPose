@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from estimater import *
 import argparse
 from concurrent import futures
@@ -20,7 +21,7 @@ class PoseEstimateService(PoseEstimateServicer):
   def _unpack_frame(self, request):
     rgb = np.frombuffer(request.rgb_data, dtype=np.uint8).reshape(request.height, request.width, 3)
     depth = np.frombuffer(request.depth_data, dtype=np.float32).reshape(request.height, request.width)
-    K = np.array(request.intrinsics, dtype=np.float32).reshape(3, 3)
+    K = np.array(request.intrinsics, dtype=np.float64).reshape(3, 3)
     return rgb, depth, K
 
   def TrackStream(self, request_iterator, context):
@@ -42,6 +43,8 @@ class PoseEstimateService(PoseEstimateServicer):
           rotation=pose[:3, :3].reshape(-1).tolist(),
           success=True,
       )
+    #Reset the stream to prevent stale state from hanging around
+    self.est.pose_last = None
 
   def Reset(self, request, context):
     self.est.pose_last = None
@@ -58,8 +61,8 @@ class PoseEstimateService(PoseEstimateServicer):
 if __name__ == '__main__':
   code_dir = os.path.dirname(os.path.realpath(__file__))
   parser = argparse.ArgumentParser()
-  parser.add_argument('mesh_file', type=str, help='path to the object mesh to load (e.g. textured_simple.obj)',\
-                      default='{code_dir}/demo_data/mustard0/mesh/textured_simple.obj')
+  parser.add_argument('mesh_file', type=str, nargs='?', help='path to the object mesh to load (e.g. textured_simple.obj)',
+                      default=f'{code_dir}/demo_data/mustard0/mesh/textured_simple.obj')
   parser.add_argument('--port', type=int, default=50051)
   parser.add_argument('--est_refine_iter', type=int, default=5)
   parser.add_argument('--track_refine_iter', type=int, default=2)

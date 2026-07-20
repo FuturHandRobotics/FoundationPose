@@ -4,16 +4,10 @@
 # (unchanged from your original dockerfile.grpc)
 # =============================================================================
 FROM python:3.11-slim AS protogen
-# grpcio-tools==1.68.0's bundled protoc always stamps generated _pb2.py gencode as
-# protobuf 5.28.1 - that's baked into the wheel itself and does NOT depend on which
-# protobuf package version gets installed alongside it here. What actually matters is
-# the runtime protobuf version installed where the generated code executes (pinned in
-# futur_grpc's pyproject.toml), which must be >= 5.28.1 per protobuf's version guarantee.
-# Pinned here only for consistency with that runtime pin, not because it affects gencode.
 RUN pip install --no-cache-dir grpcio-tools==1.68.0
 RUN apt-get update && apt-get install -y --no-install-recommends git openssh-client
 RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> /root/.ssh/known_hosts
-RUN --mount=type=ssh git clone --depth 1 --branch v1.1.2 \
+RUN --mount=type=ssh git clone --depth 1 --branch v1.1.3 \
     git@github.com:FuturHandRobotics/futur_grpc.git /proto-src
 WORKDIR /proto-src
 RUN chmod +x scripts/generate.sh && ./scripts/generate.sh
