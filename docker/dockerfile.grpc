@@ -5,10 +5,10 @@ FROM python:3.11-slim AS protogen
 # Otherwise pip resolves grpcio-tools' loose protobuf constraint independently (currently 5.28.1),
 # and generate.sh stamps the generated _pb2.py gencode with that newer version, which is then
 # incompatible with the older protobuf runtime that futur_grpc actually installs downstream.
-RUN pip install --no-cache-dir grpcio-tools==1.68.0 protobuf==5.28.0
+RUN pip install --no-cache-dir grpcio-tools==1.68.0
 RUN apt-get update && apt-get install -y --no-install-recommends git openssh-client
 RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> /root/.ssh/known_hosts
-RUN --mount=type=ssh git clone --depth 1 --branch v1.0.2 \
+RUN --mount=type=ssh git clone --depth 1 --branch v1.1.2 \
     git@github.com:FuturHandRobotics/futur_grpc.git /proto-src
 WORKDIR /proto-src
 RUN chmod +x scripts/generate.sh && ./scripts/generate.sh
