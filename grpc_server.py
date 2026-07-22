@@ -62,7 +62,7 @@ if __name__ == '__main__':
   code_dir = os.path.dirname(os.path.realpath(__file__))
   parser = argparse.ArgumentParser()
   parser.add_argument('mesh_file', type=str, nargs='?', help='path to the object mesh to load (e.g. textured_simple.obj)',
-                      default=f'{code_dir}/demo_data/mustard0/mesh/textured_simple.obj')
+                      default=f'{code_dir}/meshes/Perfectionist_Pro_Puck.obj')
   parser.add_argument('--port', type=int, default=50051)
   parser.add_argument('--est_refine_iter', type=int, default=5)
   parser.add_argument('--track_refine_iter', type=int, default=2)
@@ -74,6 +74,19 @@ if __name__ == '__main__':
   set_seed(0)
 
   mesh = trimesh.load(args.mesh_file)
+
+  if mesh.visual.kind == 'texture' and mesh.visual.material.image is None:
+      try:
+          color = mesh.visual.material.diffuse[:3]
+      except Exception:
+          color = [128, 128, 128]
+      tex = Image.new('RGB', (16, 16), tuple(int(c) for c in color))
+      mesh.visual.material.image = tex
+
+  if mesh.visual.uv is None:
+      # dummy UVs — since the texture is a flat solid color, it doesn't matter
+      # what they point to, they just need to exist and be the right shape
+      mesh.visual.uv = np.zeros((len(mesh.vertices), 2), dtype=np.float32)
 
   scorer = ScorePredictor()
   refiner = PoseRefinePredictor()
