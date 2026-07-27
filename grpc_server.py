@@ -103,7 +103,13 @@ if __name__ == '__main__':
   )
   logging.info('estimator initialization done')
 
-  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+  server = grpc.server(
+      futures.ThreadPoolExecutor(max_workers=10),
+      options=[
+          ('grpc.max_send_message_length', 64 * 1024 * 1024),
+          ('grpc.max_receive_message_length', 64 * 1024 * 1024),
+      ],
+  )
   add_PoseEstimateServicer_to_server(
       PoseEstimateService(est, args.est_refine_iter, args.track_refine_iter), server
   )
