@@ -156,3 +156,12 @@ data/
 logs/
 !BundleTrack/XMem/inference/data
 run_used.yml
+# run artifacts / test data -- not source
+bulk_pick_test/
+pose_out_zivid/
+pose_out_all/
+color1.png
+color1_segments.json
+color_combined.png
+zivid_depth.npy
+zivid_intrinsics.json
